@@ -6,14 +6,19 @@ import { Heart } from "@/components/decor/Illustrations";
 import { HeartBurst } from "@/components/decor/HeartBurst";
 
 const RESUME_AFTER = 1000;
+const RESET_AFTER = 2000; // ms without a tap before the tap count starts over
 
 type Burst = { x: number; y: number; viewport: { width: number; height: number } };
 
-/** 2D stand-in when WebGL is unavailable: same tap-to-pause, tap-to-crack, tap-to-break rules. */
+/**
+ * 2D stand-in when WebGL is unavailable: same rules as the 3D heart. Taps make it beat and pause,
+ * nothing shows progress, slow taps start the count over, and the last tap bursts it into hearts.
+ */
 export default function HeartFallback({ hitsToBreak, onBroken }: { hitsToBreak: number; onBroken: () => void }) {
   const reduce = useReducedMotion() ?? false;
   const [scope, animate] = useAnimate<HTMLDivElement>();
-  const [hits, setHits] = useState(0);
+  const hits = useRef(0);
+  const lastHit = useRef(0);
   const [paused, setPaused] = useState(false);
   const [burst, setBurst] = useState<Burst | null>(null);
   const resumeTimer = useRef<number | undefined>(undefined);
@@ -22,10 +27,12 @@ export default function HeartFallback({ hitsToBreak, onBroken }: { hitsToBreak: 
 
   const hit = () => {
     if (burst) return;
-    const next = hits + 1;
-    setHits(next);
+    const now = performance.now();
+    if (now - lastHit.current > RESET_AFTER) hits.current = 0;
+    lastHit.current = now;
+    hits.current += 1;
     window.clearTimeout(resumeTimer.current);
-    if (next >= hitsToBreak) {
+    if (hits.current >= hitsToBreak) {
       const r = scope.current.getBoundingClientRect();
       setBurst({
         x: r.left + r.width / 2,
@@ -37,11 +44,9 @@ export default function HeartFallback({ hitsToBreak, onBroken }: { hitsToBreak: 
     }
     setPaused(true);
     resumeTimer.current = window.setTimeout(() => setPaused(false), RESUME_AFTER);
-    const scale = 1 + (next / hitsToBreak) * 0.08;
-    animate(scope.current, reduce ? { scale } : { x: [0, -8, 8, -4, 0], scale }, { duration: 0.15 });
+    if (!reduce) animate(scope.current, { scale: [1, 1.07, 1] }, { duration: 0.18 });
   };
 
-  const crack = hits / hitsToBreak;
   return (
     <div
       className={`absolute inset-0 flex touch-manipulation items-center justify-center${burst ? " pointer-events-none" : ""}`}
@@ -61,14 +66,14 @@ export default function HeartFallback({ hitsToBreak, onBroken }: { hitsToBreak: 
             className="anim-spin-y size-full"
             style={{
               animationPlayState: paused ? "paused" : "running",
-              filter: `drop-shadow(0 0 ${8 + crack * 30}px rgb(255 92 141 / ${0.3 + crack * 0.6}))`,
+              filter: "drop-shadow(0 0 8px rgb(255 92 141 / 0.3))",
             }}
           >
             <Heart className="size-full" color="#d92648" />
           </div>
         </div>
       )}
-      {burst && <HeartBurst {...burst} scale={2} />}
+      {burst && <HeartBurst {...burst} scale={2} count={64} />}
     </div>
   );
 }

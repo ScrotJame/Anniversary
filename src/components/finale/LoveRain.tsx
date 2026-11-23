@@ -39,6 +39,8 @@ export default function LoveRain({ photos }: { photos: string[] }) {
           width: between(rand, 72, 110),
           duration: between(rand, 10, 16),
           delay: between(rand, 0.6, 1.2) + ((i * 5) % PHOTO_COUNT) * 1.2,
+          tumble: between(rand, 3.5, 6.5),
+          reverse: i % 2 === 1,
         }));
 
   return (
@@ -54,10 +56,20 @@ export default function LoveRain({ photos }: { photos: string[] }) {
             animationDuration: `${c.duration}s`,
             animationDelay: `${c.delay}s`,
             animationFillMode: "backwards",
+            perspective: 700,
           }}
         >
-          <div className="bg-paper p-1.5 pb-5 shadow-lg shadow-black/40">
-            <Photo src={c.src} className="aspect-square w-full bg-cream" />
+          {/* 3D tumble: polaroid front, paper back with a heart */}
+          <div
+            className="anim-tumble relative"
+            style={{ animationDuration: `${c.tumble}s`, animationDirection: c.reverse ? "reverse" : "normal" }}
+          >
+            <div className="bg-paper p-1.5 pb-5 shadow-lg shadow-black/40 [backface-visibility:hidden]">
+              <Photo src={c.src} className="aspect-square w-full bg-cream" />
+            </div>
+            <div className="absolute inset-0 grid place-items-center bg-[#f3e7d6] shadow-lg shadow-black/40 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+              <Heart className="w-1/3" color="#e8485f" />
+            </div>
           </div>
         </div>
       ))}
