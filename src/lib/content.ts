@@ -47,8 +47,14 @@ function toUrl(folder: string, name: string): string {
   return `${BASE}/content/${folder}/${encodeURIComponent(name)}`;
 }
 
+/** Placeholder art shipped with the repo, e.g. "01-mau.svg". */
+const SAMPLE = /-mau\.[a-z]+$/i;
+
+/** Real photos replace the samples; samples only show when a folder has nothing else. */
 function images(folder: string): string[] {
-  return listFiles(folder, IMAGE_EXT).map((name) => toUrl(folder, name));
+  const files = listFiles(folder, IMAGE_EXT);
+  const real = files.filter((name) => !SAMPLE.test(name));
+  return (real.length > 0 ? real : files).map((name) => toUrl(folder, name));
 }
 
 /** "01 - Perfect - Ed Sheeran.mp3" → { title: "Perfect", artist: "Ed Sheeran" } */

@@ -41,3 +41,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# personal photos: kept on this machine only, never committed (repo is public)
+/public/content/**/*.jpg
+/public/content/**/*.jpeg
+/public/content/**/*.png
+/public/content/**/*.webp
+/public/content/**/*.heic
+/public/content/**/*.gif
+/public/content/**/*.avif
+
+# local clone of the private photo repo (ScrotJame/Anniversary-content)
+/content-private/

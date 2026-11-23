@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/sync-private-content.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/sync-private-content.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync-photos": "node scripts/sync-private-content.mjs"
   },
   "dependencies": {
     "motion": "^14.14.0",
