@@ -11,6 +11,7 @@ import {
 } from "@/components/decor/EnvelopeArt";
 import { HeartBurst } from "@/components/decor/HeartBurst";
 import { useMusic } from "@/components/music/MusicProvider";
+import { TooEarlyError, WrongPasswordError } from "@/lib/unseal";
 import { Screen, ScriptTitle } from "./Screen";
 
 const faceStyle = { backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" } as const;
@@ -23,16 +24,56 @@ const LEAVE_AT = 4600; // card has been readable for ~2.5s → next screen (Scre
 
 type Stage = "closed" | "opening" | "card";
 
+/**
+ * Locked envelope. Tapping it always starts the music; before unlockAt it only shows a countdown,
+ * after that it asks for the password (if any). A wrong password leaves the visitor as a guest.
+ */
+export type EnvelopeLock = {
+  /** Date lock; null when only the password is left. */
+  unlockAt: number | null;
+  needsPassword: boolean;
+  /** Decrypts the letters and photos; throws TooEarlyError or WrongPasswordError. */
+  unseal: (password?: string) => Promise<void>;
+};
+
+type Notice = "locked" | "password" | "unsealing" | "guest" | "error" | null;
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** "8 ngày 03:12:45" */
+function formatLeft(ms: number): string {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  const days = Math.floor(s / 86400);
+  const hms = `${pad(Math.floor((s % 86400) / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+  return days > 0 ? `${days} ngày ${hms}` : hms;
+}
+
+const formatDay = (t: number) =>
+  new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit", timeZone: "Asia/Ho_Chi_Minh" }).format(t);
+
 export default function EnvelopeScreen({
   title,
   cardText,
+  lock,
   onOpened,
 }: {
   title: string;
   cardText: string;
+  lock: EnvelopeLock | null;
   onOpened: () => void;
 }) {
-  const { start } = useMusic();
+  const { start, started } = useMusic();
+  const [notice, setNotice] = useState<Notice>(null);
+  const [wiggle, setWiggle] = useState(false);
+  const [password, setPassword] = useState("");
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const counting = notice === "locked";
+  useEffect(() => {
+    if (!counting) return;
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, [counting]);
   const reduce = useReducedMotion();
   const [stage, setStage] = useState<Stage>("closed");
   const [burst, setBurst] = useState<{
@@ -54,10 +95,8 @@ export default function EnvelopeScreen({
     onOpened();
   };
 
-  const handleOpen = () => {
-    if (open) return;
+  const playOpening = () => {
     setStage("opening");
-    start(); // the tap is the user gesture browsers require before audio can play
 
     const rect = envelopeRef.current?.getBoundingClientRect();
     const at = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms));
@@ -75,6 +114,53 @@ export default function EnvelopeScreen({
     at(LEAVE_AT, leave);
   };
 
+  const deny = () => {
+    setNow(Date.now());
+    setNotice("locked");
+    if (!reduce) setWiggle(true);
+  };
+
+  const tryUnseal = async (pw?: string) => {
+    if (!lock) return;
+    setNotice("unsealing");
+    try {
+      await lock.unseal(pw);
+    } catch (err) {
+      if (err instanceof TooEarlyError) deny();
+      else if (err instanceof WrongPasswordError) setNotice("guest");
+      else {
+        console.error(err);
+        setNotice("error");
+      }
+      return;
+    }
+    setNotice(null);
+    playOpening();
+  };
+
+  const handleOpen = () => {
+    if (open || notice === "unsealing") return;
+    if (!started) start(); // the tap is the user gesture browsers require before audio can play
+
+    if (!lock) {
+      playOpening();
+      return;
+    }
+    if (lock.unlockAt !== null && Date.now() < lock.unlockAt) {
+      deny();
+      return;
+    }
+    if (lock.needsPassword) {
+      if (notice !== "password") {
+        setPassword("");
+        setNotice("password");
+      }
+      passwordRef.current?.focus();
+      return;
+    }
+    void tryUnseal();
+  };
+
   return (
     <Screen>
       <ScriptTitle className="mb-14 lg:text-6xl">{title}</ScriptTitle>
@@ -88,9 +174,10 @@ export default function EnvelopeScreen({
             ref={envelopeRef}
             type="button"
             onClick={handleOpen}
+            onAnimationEnd={() => setWiggle(false)}
             disabled={open}
             aria-label="Mở phong thư"
-            className={`relative block aspect-[699.86/513.27] w-[min(86vw,360px)] sm:w-[min(460px,72vh)] lg:w-[min(540px,72vh)] [perspective:900px] ${open ? "" : "animate-breathe"}`}
+            className={`relative block aspect-[699.86/513.27] w-[min(86vw,360px)] sm:w-[min(460px,72vh)] lg:w-[min(540px,72vh)] [perspective:900px] ${open ? "" : wiggle ? "animate-wiggle" : "animate-breathe"}`}
           >
             {/* inside of the envelope */}
             <EnvelopeBack className="absolute inset-0 size-full drop-shadow-[0_18px_28px_rgb(0_0_0/0.5)]" />
@@ -152,9 +239,76 @@ export default function EnvelopeScreen({
         )}
       </div>
 
-      <p className="mt-10 font-serif text-sm text-cream/75 italic sm:text-base">
-        {open ? "…" : "chạm vào phong thư để mở…"}
-      </p>
+      {notice && lock ? (
+        <motion.div
+          key={notice}
+          role="status"
+          className="mt-10 text-center font-serif text-cream drop-shadow-[0_2px_6px_rgb(0_0_0/0.4)]"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+        >
+          {notice === "locked" && (
+            <>
+              <p className="text-base sm:text-lg">
+                Chưa đến ngày mở thư đâu nha 💌
+              </p>
+              <p className="mt-1 text-sm text-cream/80 italic sm:text-base">
+                {lock.unlockAt !== null && lock.unlockAt - now > 0
+                  ? `Thư sẽ mở vào ${formatDay(lock.unlockAt)}, còn ${formatLeft(lock.unlockAt - now)} nữa`
+                  : "Sắp rồi, đợi chút xíu rồi chạm lại nhé"}
+              </p>
+              <p className="mt-3 text-xs text-cream/65 italic sm:text-sm">Trong lúc chờ thì nghe nhạc nhé ♪</p>
+            </>
+          )}
+          {notice === "password" && (
+            <form
+              className="flex flex-col items-center gap-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void tryUnseal(password);
+              }}
+            >
+              <label htmlFor="envelope-password" className="text-base sm:text-lg">
+                Nhập mật khẩu để mở thư 💌
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="envelope-password"
+                  ref={passwordRef}
+                  type="password"
+                  autoFocus
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  enterKeyHint="go"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-52 rounded-full bg-paper/95 px-4 py-2 font-sans text-base text-black shadow-md outline-none focus:ring-2 focus:ring-cream"
+                />
+                <button type="submit" className="btn">
+                  Mở
+                </button>
+              </div>
+            </form>
+          )}
+          {notice === "unsealing" && <p className="text-sm italic sm:text-base">Đang mở thư…</p>}
+          {notice === "guest" && (
+            <>
+              <p className="text-base sm:text-lg">Chào bạn 👋</p>
+              <p className="mt-1 text-sm text-cream/80 italic sm:text-base">
+                Lá thư này dành cho một người đặc biệt. Mời bạn ở lại nghe nhạc nhé ♪
+              </p>
+            </>
+          )}
+          {notice === "error" && (
+            <p className="text-sm italic sm:text-base">Chưa mở được thư, kiểm tra mạng rồi chạm lại nhé</p>
+          )}
+        </motion.div>
+      ) : (
+        <p className="mt-10 font-serif text-sm text-cream/75 italic sm:text-base">
+          {open ? "…" : "chạm vào phong thư để mở…"}
+        </p>
+      )}
 
       {burst && <HeartBurst x={burst.x} y={burst.y} scale={burst.scale} viewport={burst.viewport} />}
     </Screen>

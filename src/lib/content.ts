@@ -1,7 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Content, ScreenId, Settings, Song } from "./types";
-import { isBackground, pickBackground } from "./background";
+// explicit .ts extensions: scripts/seal-content.mts imports this file with plain Node
+import { isBackground, pickBackground } from "./background.ts";
+import { lockFor } from "./seal.ts";
 
 /**
  * Reads everything under public/content/ at build time (and on every request in dev).
@@ -19,9 +21,10 @@ const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "bas
 const DEFAULT_SETTINGS: Settings = {
   names: ["Anh", "Em"],
   startDate: null,
-  envelopeTitle: "Happy Anniversary, Love!",
+  envelopeTitle: "Happy 1 Year Anniversary, My Lover!",
   finaleTitle: "HAPPY ANNIVERSARY",
   cardText: "Kỉ niệm 1 năm của chúng ta",
+  unlockAt: null,
 };
 
 function warn(message: string) {
@@ -120,21 +123,34 @@ function settings(): Settings {
   }
 }
 
-export function loadContent(): Content {
+/**
+ * Everything the site shows. In a locked build (unlockAt in the future and/or env UNLOCK_PASS set) the
+ * photos and letters are left out — they are served encrypted from public/sealed/ instead — unless
+ * `reveal` is set, which only the seal script does.
+ */
+export function loadContent({ reveal = false }: { reveal?: boolean } = {}): Content {
+  const s = settings();
+  const lock = reveal ? null : lockFor(s.unlockAt, Boolean(process.env.UNLOCK_PASS));
+  const sealed = lock !== null;
   return {
-    settings: settings(),
+    settings: s,
     songs: songs(),
-    photos: {
-      polaroid: images("polaroid"),
-      memories: images("memories"),
-      collage: images("collage"),
-      finale: images("finale"),
-    },
-    letters: {
-      polaroid: letter("polaroid"),
-      memories: letter("memories"),
-      flowers: letter("flowers"),
-    },
+    photos: sealed
+      ? { polaroid: [], memories: [], collage: [], finale: [] }
+      : {
+          polaroid: images("polaroid"),
+          memories: images("memories"),
+          collage: images("collage"),
+          finale: images("finale"),
+        },
+    letters: sealed
+      ? { polaroid: [], memories: [], flowers: [] }
+      : {
+          polaroid: letter("polaroid"),
+          memories: letter("memories"),
+          flowers: letter("flowers"),
+        },
     backgrounds: backgrounds(),
+    lock,
   };
 }

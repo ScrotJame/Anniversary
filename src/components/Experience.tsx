@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import type { Content, GiftId, ScreenId } from "@/lib/types";
+import { unlockTime } from "@/lib/seal";
+import { unseal } from "@/lib/unseal";
 import { MusicProvider } from "./music/MusicProvider";
 import MusicPlayer from "./music/MusicPlayer";
+import DevtoolsGuard from "./DevtoolsGuard";
 import { Backdrop } from "./decor/Backdrop";
-import EnvelopeScreen from "./screens/EnvelopeScreen";
+import EnvelopeScreen, { type EnvelopeLock } from "./screens/EnvelopeScreen";
 import GiftsScreen from "./screens/GiftsScreen";
 import PolaroidScreen from "./screens/PolaroidScreen";
 import CollageScreen from "./screens/CollageScreen";
@@ -26,7 +29,9 @@ const GIFT_TARGET: Record<GiftId, ScreenId> = {
   flowers: "flowers",
 };
 
-export default function Experience({ content }: { content: Content }) {
+export default function Experience({ content: initial }: { content: Content }) {
+  // Starts without letters/photos in a time-locked build; unsealing fills them in.
+  const [content, setContent] = useState(initial);
   const [screen, setScreen] = useState<ScreenId>("envelope");
   const [opened, setOpened] = useState<ReadonlySet<GiftId>>(new Set());
 
@@ -47,6 +52,23 @@ export default function Experience({ content }: { content: Content }) {
   };
 
   const { photos, letters, settings } = content;
+
+  const lockInfo = content.lock;
+  const unsealContent = useCallback(
+    async (password?: string) => {
+      if (!lockInfo) return;
+      const revealed = await unseal(BASE, lockInfo, password);
+      setContent((prev) => ({ ...prev, ...revealed, lock: null }));
+    },
+    [lockInfo],
+  );
+  const lock = useMemo<EnvelopeLock | null>(
+    () =>
+      lockInfo
+        ? { unlockAt: unlockTime(lockInfo.unlockAt), needsPassword: lockInfo.password, unseal: unsealContent }
+        : null,
+    [lockInfo, unsealContent],
+  );
   const backgrounds = useMemo(
     () => ({ ...content.backgrounds, envelope: content.backgrounds.envelope ?? SHOP_BG, gifts: undefined }),
     [content.backgrounds],
@@ -65,6 +87,7 @@ export default function Experience({ content }: { content: Content }) {
             key="envelope"
             title={settings.envelopeTitle}
             cardText={settings.cardText}
+            lock={lock}
             onOpened={() => go("gifts")}
           />
         )}
@@ -98,6 +121,7 @@ export default function Experience({ content }: { content: Content }) {
         )}
       </AnimatePresence>
       <MusicPlayer />
+      <DevtoolsGuard />
     </MusicProvider>
   );
 }

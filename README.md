@@ -23,7 +23,7 @@ Toàn bộ nội dung (ảnh, nhạc, thư, tên, ngày bắt đầu) lấy từ
 
 ### Yêu cầu
 
-- [Node.js](https://nodejs.org/) **24+** (cần cho `npm test`; chạy web thì Node 20+ là đủ)
+- [Node.js](https://nodejs.org/) **24+**
 - Git
 
 ### 1. Clone repo
@@ -75,7 +75,7 @@ Thêm hoặc xoá file trong các thư mục dưới đây, không cần sửa c
 | `memories/` | như trên | Màn Thư tay: dải ảnh |
 | `finale/` | như trên | Màn cuối: ảnh rơi cùng mưa tim |
 | `letters/polaroid.txt`, `memories.txt`, `flowers.txt` | văn bản | Nội dung thư; cách nhau 1 dòng trống là sang đoạn mới |
-| `settings.json` | JSON | Tên hai người, ngày bắt đầu (`YYYY-MM-DD`), các tiêu đề, chữ trên thiệp |
+| `settings.json` | JSON | Tên hai người, ngày bắt đầu (`YYYY-MM-DD`), các tiêu đề, chữ trên thiệp, ngày mở thư (`unlockAt`) |
 
 - **Tên bài hát** lấy từ tên file: `01 - Perfect - Ed Sheeran.mp3` hiện là *Perfect · Ed Sheeran*. Nên dùng mp3 128–192 kbps, nhẹ hơn wav khoảng 10 lần.
 - **Ảnh** nên thu nhỏ còn khoảng 1600px ở cạnh dài trước khi bỏ vào, vì static export không tự nén ảnh.
@@ -83,6 +83,27 @@ Thêm hoặc xoá file trong các thư mục dưới đây, không cần sửa c
 - **Ảnh nền từng màn:** đặt file tên `background.*` (jpg, png, webp, svg) vào thư mục của màn đó, ví dụ `polaroid/`, `collage/`, `memories/`, `finale/`, hoặc tạo thêm `flowers/`. Ảnh nền không bị tính là ảnh của màn.
   - Màn phong thư mặc định dùng `public/shop_bg.svg` (có thể thay bằng `envelope/background.*`).
   - Màn quà luôn dùng `public/inside_shop_bg.svg`, vì vị trí các món quà được căn theo kệ trong ảnh này (xem `GIFTS` trong `src/components/screens/GiftsScreen.tsx`).
+
+### Khoá thư đến một ngày: `unlockAt`
+
+Trong `settings.json`, đặt `"unlockAt": "2026-12-02T00:00:00+07:00"` (ngày giờ kèm múi giờ). Trước thời điểm đó web vẫn vào được và nghe nhạc được, nhưng chạm phong thư chỉ hiện đếm ngược. Đến giờ, chạm lại là thư tự mở, không cần deploy lại.
+
+Đây là khoá thật, không phải chỉ ẩn nút: lúc build, `scripts/seal-content.mts` mã hoá thư và ảnh bằng một khoá AES ngẫu nhiên, rồi khoá đó được mã hoá theo thời gian bằng [drand tlock](https://github.com/drand/tlock-js). Mạng drand chỉ công bố chìa giải mã đúng giờ đã hẹn, nên chỉnh giờ máy hay xem mã nguồn đều không đọc được. Sau khi build, `scripts/strip-sealed.mjs` xoá bản rõ khỏi `out/` và làm build thất bại nếu còn sót chữ trong thư hay ảnh.
+
+### Mật khẩu: `UNLOCK_PASS`
+
+Đặt mật khẩu thì sau ngày mở thư, chạm phong thư sẽ hiện ô nhập mật khẩu. Nhập đúng thì mở thư. Nhập gì khác thì chỉ hiện lời chào và được nghe nhạc (chế độ khách). Không phân biệt hoa/thường, không tính khoảng trắng ở đầu và cuối, nhưng có phân biệt dấu (`hồng` khác `hong`).
+
+- Mật khẩu **không bao giờ để trong repo**. Trên GitHub: Settings → Secrets and variables → Actions → New repository secret, tên `UNLOCK_PASS`. Trên máy: tạo file `.env.local` có dòng `UNLOCK_PASS=...` (file này đã bị `.gitignore` chặn).
+- Mật khẩu là lớp khoá thứ hai: thư được mã hoá bằng khoá suy ra từ mật khẩu, rồi mới khoá theo ngày. Nó vẫn có tác dụng sau `unlockAt`.
+- Chưa đặt `UNLOCK_PASS` thì CI vẫn deploy (chỉ khoá theo ngày) và hiện cảnh báo.
+- Không có server giới hạn số lần thử, nên mật khẩu quá đơn giản có thể bị dò ra bởi người rành máy tính.
+
+Lưu ý chung:
+
+- Build cần mạng (để lấy thông tin của drand).
+- Build lại sau thời điểm `unlockAt` thì chỉ còn khoá mật khẩu (nếu có). Không có mật khẩu thì ra bản bình thường, không khoá.
+- Khoá chỉ che những gì được deploy. Nội dung đã commit vào repo công khai này thì ai cũng đọc được trên GitHub.
 
 ### Ảnh thật và nhạc: luôn để trong `content-private/`
 

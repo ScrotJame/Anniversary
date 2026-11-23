@@ -21,6 +21,9 @@ jobs:
       # Real photos live in the private repo ScrotJame/Anniversary-content.
       # Without the deploy key (e.g. PRs from forks) the site builds with the sample content.
       HAS_CONTENT_KEY: ${{ secrets.CONTENT_DEPLOY_KEY != '' }}
+      # Password for the letters (see src/lib/seal.ts). Never commit it; set it under
+      # Settings → Secrets and variables → Actions → UNLOCK_PASS.
+      UNLOCK_PASS: ${{ secrets.UNLOCK_PASS }}
     steps:
       - uses: actions/checkout@v7
 
@@ -31,6 +34,10 @@ jobs:
           repository: ScrotJame/Anniversary-content
           ssh-key: ${{ secrets.CONTENT_DEPLOY_KEY }}
           path: content-private
+
+      - name: Warn when there is no password
+        if: env.HAS_CONTENT_KEY == 'true' && env.UNLOCK_PASS == ''
+        run: echo "::warning::Secret UNLOCK_PASS is not set — the letters are only date-locked (unlockAt), no password."
 
       - uses: actions/setup-node@v7
         with:

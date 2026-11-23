@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/sync-private-content.mjs",
+    "predev": "node scripts/sync-private-content.mjs && node --env-file-if-exists=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seal-content.mts",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-private-content.mjs",
+    "prebuild": "node scripts/sync-private-content.mjs && node --env-file-if-exists=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seal-content.mts",
     "build": "next build",
+    "postbuild": "node scripts/strip-sealed.mjs",
     "start": "next start",
     "lint": "eslint",
     "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"tests/**/*.test.mts\"",
@@ -17,7 +18,8 @@
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "three": "^0.187.0"
+    "three": "^0.187.0",
+    "tlock-js": "^0.9.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",
