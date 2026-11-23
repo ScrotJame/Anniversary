@@ -51,5 +51,11 @@ next-env.d.ts
 /public/content/**/*.gif
 /public/content/**/*.avif
 
-# local clone of the private photo repo (ScrotJame/Anniversary-content)
+# music: copyrighted songs live in the private repo too
+/public/content/**/*.mp3
+/public/content/**/*.m4a
+/public/content/**/*.ogg
+/public/content/**/*.wav
+
+# local clone of the private photo + music repo (ScrotJame/Anniversary-content)
 /content-private/
