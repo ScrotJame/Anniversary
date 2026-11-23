@@ -1,26 +1,78 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-wine: #6b0f1a;
+  --color-wine-deep: #3a0710;
+  --color-rose: #b3132b;
+  --color-cream: #f5e6d3;
+  --color-paper: #fdf8f0;
+  --color-gold: #c9a227;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-script: var(--font-dancing), cursive;
+  --font-serif: var(--font-playfair), Georgia, serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --animate-spin-slow: spin 4s linear infinite;
+  --animate-breathe: breathe 2.4s ease-in-out infinite;
+  --animate-wiggle: wiggle 0.6s ease-in-out;
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-7deg); }
+    75% { transform: rotate(7deg); }
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-wine);
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgb(179 19 43 / 0.35), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgb(58 7 16 / 0.6), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+  color: var(--color-cream);
+  font-family: var(--font-serif);
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-full border border-cream/40 bg-cream/10 px-5 py-2.5 font-serif text-sm text-cream backdrop-blur-sm transition hover:bg-cream/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-95;
+  }
+  .btn-solid {
+    @apply inline-flex items-center gap-2 rounded-full bg-cream px-6 py-3 font-serif text-wine shadow-lg shadow-black/30 transition hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-95;
+  }
+  .gingham {
+    background-color: #fdf8f0;
+    background-image:
+      linear-gradient(90deg, rgb(179 19 43 / 0.55) 50%, transparent 50%),
+      linear-gradient(rgb(179 19 43 / 0.55) 50%, transparent 50%);
+    background-size: 28px 28px;
+  }
+}
+
+/* Floating hearts & falling petals */
+@keyframes float-up {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  10% { opacity: 0.85; }
+  100% { transform: translateY(-115vh) scale(1.1); opacity: 0; }
+}
+@keyframes fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.9; }
+  100% { transform: translateY(110vh) rotate(540deg); opacity: 0.6; }
+}
+@keyframes sway {
+  0%, 100% { transform: translateX(-18px); }
+  50% { transform: translateX(18px); }
+}
+.anim-float { animation: float-up linear infinite; }
+.anim-fall { animation: fall linear infinite; }
+.anim-sway { animation: sway ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-float, .anim-fall, .anim-sway { display: none; }
+  .animate-spin-slow, .animate-breathe { animation: none; }
 }
