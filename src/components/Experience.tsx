@@ -74,7 +74,13 @@ export default function Experience({ content }: { content: Content }) {
           <FlowerLetterScreen key="flowers" letter={letters.flowers} onNext={backToGifts} />
         )}
         {screen === "finale" && (
-          <FinaleScreen key="finale" photo={photos.finale[0]} settings={settings} onRestart={restart} />
+          <FinaleScreen
+            key="finale"
+            photos={photos.finale}
+            settings={settings}
+            hasBackground={Boolean(backgrounds.finale)}
+            onRestart={restart}
+          />
         )}
       </AnimatePresence>
       <MusicPlayer />
