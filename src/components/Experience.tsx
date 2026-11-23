@@ -5,6 +5,7 @@ import { AnimatePresence } from "motion/react";
 import type { Content, GiftId, ScreenId } from "@/lib/types";
 import { MusicProvider } from "./music/MusicProvider";
 import MusicPlayer from "./music/MusicPlayer";
+import { Backdrop } from "./decor/Backdrop";
 import EnvelopeScreen from "./screens/EnvelopeScreen";
 import GiftsScreen from "./screens/GiftsScreen";
 import PolaroidScreen from "./screens/PolaroidScreen";
@@ -39,10 +40,11 @@ export default function Experience({ content }: { content: Content }) {
     go("envelope");
   };
 
-  const { photos, letters, settings } = content;
+  const { photos, letters, settings, backgrounds } = content;
 
   return (
     <MusicProvider songs={content.songs}>
+      <Backdrop src={backgrounds[screen]} />
       <AnimatePresence mode="wait">
         {screen === "envelope" && (
           <EnvelopeScreen

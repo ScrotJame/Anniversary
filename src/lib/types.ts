@@ -29,6 +29,8 @@ export type Content = {
     memories: string[];
     flowers: string[];
   };
+  /** Optional full-screen background per screen: public/content/<screen>/background.* */
+  backgrounds: Partial<Record<ScreenId, string>>;
 };
 
 export type ScreenId =

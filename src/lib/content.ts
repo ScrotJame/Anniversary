@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Content, Settings, Song } from "./types";
+import type { Content, ScreenId, Settings, Song } from "./types";
+import { isBackground, pickBackground } from "./background";
 
 /**
  * Reads everything under public/content/ at build time (and on every request in dev).
@@ -50,11 +51,29 @@ function toUrl(folder: string, name: string): string {
 /** Placeholder art shipped with the repo, e.g. "01-mau.svg". */
 const SAMPLE = /-mau\.[a-z]+$/i;
 
-/** Real photos replace the samples; samples only show when a folder has nothing else. */
+/** Real photos replace the samples; samples only show when a folder has nothing else. background.* is never a photo. */
 function images(folder: string): string[] {
-  const files = listFiles(folder, IMAGE_EXT);
+  const files = listFiles(folder, IMAGE_EXT).filter((name) => !isBackground(name));
   const real = files.filter((name) => !SAMPLE.test(name));
   return (real.length > 0 ? real : files).map((name) => toUrl(folder, name));
+}
+
+const SCREENS: ScreenId[] = ["envelope", "gifts", "polaroid", "collage", "memories", "flowers", "finale"];
+
+/** public/content/<screen>/background.* for each screen that has one. Missing folders are fine (no warning). */
+function backgrounds(): Content["backgrounds"] {
+  const found: Content["backgrounds"] = {};
+  for (const screen of SCREENS) {
+    const dir = path.join(CONTENT_DIR, screen);
+    if (!fs.existsSync(dir)) continue;
+    const names = fs
+      .readdirSync(dir, { withFileTypes: true })
+      .filter((d) => d.isFile() && IMAGE_EXT.has(path.extname(d.name).toLowerCase()))
+      .map((d) => d.name);
+    const file = pickBackground(names);
+    if (file) found[screen] = toUrl(screen, file);
+  }
+  return found;
 }
 
 /** "01 - Perfect - Ed Sheeran.mp3" → { title: "Perfect", artist: "Ed Sheeran" } */
@@ -116,5 +135,6 @@ export function loadContent(): Content {
       memories: letter("memories"),
       flowers: letter("flowers"),
     },
+    backgrounds: backgrounds(),
   };
 }
