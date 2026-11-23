@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test \"tests/**/*.test.mts\"",
     "sync-photos": "node scripts/sync-private-content.mjs"
   },
   "dependencies": {
