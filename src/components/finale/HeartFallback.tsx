@@ -43,7 +43,10 @@ export default function HeartFallback({ hitsToBreak, onBroken }: { hitsToBreak: 
 
   const crack = hits / hitsToBreak;
   return (
-    <div className="absolute inset-0 flex touch-manipulation items-center justify-center" onPointerDown={hit}>
+    <div
+      className={`absolute inset-0 flex touch-manipulation items-center justify-center${burst ? " pointer-events-none" : ""}`}
+      onPointerDown={hit}
+    >
       {!burst && (
         <div ref={scope} className="size-56 [perspective:800px] sm:size-72">
           <div
