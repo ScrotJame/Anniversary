@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS: Settings = {
   startDate: null,
   envelopeTitle: "Happy Anniversary, Love!",
   finaleTitle: "HAPPY ANNIVERSARY",
+  cardText: "Kỉ niệm 1 năm của chúng ta",
 };
 
 function warn(message: string) {

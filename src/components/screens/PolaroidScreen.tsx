@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { Polaroid } from "@/components/decor/Photo";
 import { FloatingHearts } from "@/components/decor/Ambient";
 import { Heart } from "@/components/decor/Illustrations";
-import { BackButton, Paragraphs, Screen, ScriptTitle } from "./Screen";
+import { BackButton, NextButton, Paragraphs, Screen, ScriptTitle } from "./Screen";
 
 const TILTS = [-6, 4, -2, 7, -4, 3];
 
@@ -50,9 +50,7 @@ export default function PolaroidScreen({
       <ScriptTitle className="mt-4 text-3xl sm:text-4xl">Happy Monthsary, Love ♡</ScriptTitle>
       <Paragraphs items={letter} className="mt-6 max-w-xl text-center text-[15px] leading-relaxed text-cream/90" />
 
-      <button type="button" onClick={onNext} className="btn mt-10">
-        Tiếp <span aria-hidden>→</span>
-      </button>
+      <NextButton onClick={onNext} />
     </Screen>
   );
 }

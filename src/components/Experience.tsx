@@ -45,7 +45,12 @@ export default function Experience({ content }: { content: Content }) {
     <MusicProvider songs={content.songs}>
       <AnimatePresence mode="wait">
         {screen === "envelope" && (
-          <EnvelopeScreen key="envelope" title={settings.envelopeTitle} onOpened={() => go("gifts")} />
+          <EnvelopeScreen
+            key="envelope"
+            title={settings.envelopeTitle}
+            cardText={settings.cardText}
+            onOpened={() => go("gifts")}
+          />
         )}
         {screen === "gifts" && (
           <GiftsScreen key="gifts" opened={opened} onOpenGift={openGift} onFinale={() => go("finale")} />
@@ -59,12 +64,12 @@ export default function Experience({ content }: { content: Content }) {
             onBack={backToGifts}
           />
         )}
-        {screen === "collage" && <CollageScreen key="collage" photos={photos.collage} onBack={backToGifts} />}
+        {screen === "collage" && <CollageScreen key="collage" photos={photos.collage} onNext={backToGifts} />}
         {screen === "memories" && (
-          <MemoriesScreen key="memories" photos={photos.memories} letter={letters.memories} onBack={backToGifts} />
+          <MemoriesScreen key="memories" photos={photos.memories} letter={letters.memories} onNext={backToGifts} />
         )}
         {screen === "flowers" && (
-          <FlowerLetterScreen key="flowers" letter={letters.flowers} onBack={backToGifts} />
+          <FlowerLetterScreen key="flowers" letter={letters.flowers} onNext={backToGifts} />
         )}
         {screen === "finale" && (
           <FinaleScreen key="finale" photo={photos.finale[0]} settings={settings} onRestart={restart} />

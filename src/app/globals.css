@@ -8,7 +8,7 @@
   --color-paper: #fdf8f0;
   --color-gold: #c9a227;
 
-  --font-script: var(--font-dancing), cursive;
+  --font-script: var(--font-charm), cursive;
   --font-serif: var(--font-playfair), Georgia, serif;
 
   --animate-spin-slow: spin 4s linear infinite;
@@ -35,6 +35,8 @@ body {
   background-attachment: fixed;
   color: var(--color-cream);
   font-family: var(--font-serif);
+  /* Playfair defaults to old-style figures, where "1" looks like "ı" */
+  font-variant-numeric: lining-nums;
 }
 
 @layer components {

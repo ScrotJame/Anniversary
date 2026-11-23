@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="360" height="240">
+  <defs>
+    
+    <linearGradient id="cardGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3B0" />
+      <stop offset="50%" stop-color="#FFE169" />
+      <stop offset="100%" stop-color="#FAD643" />
+    </linearGradient>
+
+    
+    <linearGradient id="heartFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5C77" />
+      <stop offset="100%" stop-color="#D92648" />
+    </linearGradient>
+
+    
+    <pattern id="staggeredHearts" width="60" height="52" patternUnits="userSpaceOnUse">
+      
+      <path d="M 15 22 C 15 22, 6 15, 6 9 C 6 5, 9 3, 12 3 C 13.8 3, 14.6 4.2, 15 5 C 15.4 4.2, 16.2 3, 18 3 C 21 3, 24 5, 24 9 C 24 15, 15 22, 15 22 Z" fill="url(#heartFill)" opacity="0.88" />
+      
+      <path d="M 45 48 C 45 48, 36 41, 36 35 C 36 31, 39 29, 42 29 C 43.8 29, 44.6 30.2, 45 31 C 45.4 30.2, 46.2 29, 48 29 C 51 29, 54 31, 54 35 C 54 41, 45 48, 45 48 Z" fill="url(#heartFill)" opacity="0.88" />
+    </pattern>
+
+    
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#5C4400" flood-opacity="0.22" />
+    </filter>
+  </defs>
+
+  
+  <rect x="12" y="12" width="336" height="216" rx="22" ry="22" fill="url(#cardGold)" stroke="#E5B80B" stroke-width="2" filter="url(#cardShadow)" />
+
+  
+  <rect x="24" y="24" width="312" height="192" rx="14" ry="14" fill="url(#staggeredHearts)" stroke="#D4A007" stroke-width="1.5" stroke-dasharray="5 4" />
+</svg>

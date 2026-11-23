@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    
+    <radialGradient id="furMain" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#BA7E4E" />
+      <stop offset="70%" stop-color="#9E6337" />
+      <stop offset="100%" stop-color="#804B24" />
+    </radialGradient>
+
+    
+    <radialGradient id="creamFur" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#F7DFC2" />
+      <stop offset="80%" stop-color="#E5C097" />
+      <stop offset="100%" stop-color="#CFA274" />
+    </radialGradient>
+
+    
+    <radialGradient id="heartGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#E62E4D" />
+      <stop offset="65%" stop-color="#B80D2B" />
+      <stop offset="100%" stop-color="#80041A" />
+    </radialGradient>
+
+    
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#241206" flood-opacity="0.35" />
+    </filter>
+    
+    <filter id="heartShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#592D12" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  
+  <ellipse cx="128" cy="238" rx="58" ry="10" fill="#000000" opacity="0.25" />
+
+  
+  <g filter="url(#softShadow)">
+    <circle cx="66" cy="64" r="28" fill="url(#furMain)" />
+    <circle cx="68" cy="66" r="16" fill="url(#creamFur)" />
+
+    <circle cx="190" cy="64" r="28" fill="url(#furMain)" />
+    <circle cx="188" cy="66" r="16" fill="url(#creamFur)" />
+  </g>
+
+  
+  <g filter="url(#softShadow)">
+    <ellipse cx="128" cy="182" rx="64" ry="54" fill="url(#furMain)" />
+    
+    <ellipse cx="128" cy="186" rx="42" ry="36" fill="url(#creamFur)" />
+  </g>
+
+  
+  <path d="M 128 205 
+           C 128 205, 108 190, 108 177 
+           C 108 169, 115 165, 121 165 
+           C 125 165, 127 168, 128 170 
+           C 129 168, 131 165, 135 165 
+           C 141 165, 148 169, 148 177 
+           C 148 190, 128 205, 128 205 Z" fill="url(#heartGrad)" filter="url(#heartShadow)" />
+  
+  <ellipse cx="116" cy="173" rx="3" ry="1.8" transform="rotate(-30 116 173)" fill="#FF8FA3" opacity="0.7" />
+
+  
+  <g filter="url(#softShadow)">
+    <ellipse cx="70" cy="176" rx="22" ry="20" transform="rotate(-15 70 176)" fill="url(#furMain)" />
+    <ellipse cx="186" cy="176" rx="22" ry="20" transform="rotate(15 186 176)" fill="url(#furMain)" />
+  </g>
+
+  
+  <g filter="url(#softShadow)">
+    <ellipse cx="128" cy="104" rx="72" ry="64" fill="url(#furMain)" />
+  </g>
+
+  
+  <ellipse cx="82" cy="116" rx="13" ry="9" fill="#E06D70" opacity="0.65" />
+  <ellipse cx="174" cy="116" rx="13" ry="9" fill="#E06D70" opacity="0.65" />
+
+  
+  <g>
+    <circle cx="96" cy="96" r="8.5" fill="#26140A" />
+    <circle cx="93.5" cy="93.5" r="2.8" fill="#FFFFFF" />
+    <circle cx="98.5" cy="98.5" r="1.2" fill="#FFFFFF" opacity="0.6" />
+
+    <circle cx="160" cy="96" r="8.5" fill="#26140A" />
+    <circle cx="157.5" cy="93.5" r="2.8" fill="#FFFFFF" />
+    <circle cx="162.5" cy="98.5" r="1.2" fill="#FFFFFF" opacity="0.6" />
+  </g>
+
+  
+  <ellipse cx="128" cy="122" rx="30" ry="23" fill="url(#creamFur)" />
+
+  
+  <g>
+    
+    <ellipse cx="128" cy="113" rx="10" ry="6.5" fill="#2B150A" />
+    <ellipse cx="125.5" cy="111" rx="3.5" ry="1.5" fill="#8C6249" opacity="0.8" />
+
+    
+    <line x1="128" y1="119" x2="128" y2="127" stroke="#2B150A" stroke-width="3.2" stroke-linecap="round" />
+    
+    
+    <path d="M 115 125 Q 128 135 141 125" fill="none" stroke="#2B150A" stroke-width="3.2" stroke-linecap="round" />
+  </g>
+</svg>

@@ -35,6 +35,15 @@ export function BackButton({ onClick }: { onClick: () => void }) {
   );
 }
 
+/** In-flow "Tiếp →" button placed at the bottom of a screen. z-40 keeps it above overlapping collage photos. */
+export function NextButton({ onClick, className = "" }: { onClick: () => void; className?: string }) {
+  return (
+    <button type="button" onClick={onClick} className={`btn relative z-40 mt-10 ${className}`}>
+      Tiếp <span aria-hidden>→</span>
+    </button>
+  );
+}
+
 export function Paragraphs({ items, className = "" }: { items: string[]; className?: string }) {
   if (items.length === 0) {
     return <p className={`italic opacity-60 ${className}`}>(Thêm nội dung thư vào public/content/letters/)</p>;

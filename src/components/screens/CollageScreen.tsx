@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Photo } from "@/components/decor/Photo";
 import { between, seeded } from "@/components/decor/random";
-import { BackButton, Screen, ScriptTitle } from "./Screen";
+import { NextButton, Screen, ScriptTitle } from "./Screen";
 
 /** Spread photos over a jittered grid so they overlap a little but never pile up. */
 function layout(count: number) {
@@ -22,13 +22,12 @@ function layout(count: number) {
   });
 }
 
-export default function CollageScreen({ photos, onBack }: { photos: string[]; onBack: () => void }) {
+export default function CollageScreen({ photos, onNext }: { photos: string[]; onNext: () => void }) {
   const [selected, setSelected] = useState<number | null>(null);
   const spots = useMemo(() => layout(photos.length), [photos.length]);
 
   return (
     <Screen className="max-w-none bg-wine-deep/60">
-      <BackButton onClick={onBack} />
       <ScriptTitle>Our little moments</ScriptTitle>
       <p className="mt-2 text-sm text-cream/60 italic">chạm vào một tấm ảnh để xem rõ hơn</p>
 
@@ -60,6 +59,8 @@ export default function CollageScreen({ photos, onBack }: { photos: string[]; on
           ),
         )}
       </div>
+
+      <NextButton onClick={onNext} className="mt-14" />
 
       <AnimatePresence>
         {selected !== null && (

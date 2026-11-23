@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Dancing_Script, Playfair_Display } from "next/font/google";
+import { Charm, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const script = Dancing_Script({
-  variable: "--font-dancing",
+// Charm instead of Dancing Script: Dancing Script drops the hook-above
+// (dấu hỏi) on letters like "ỉ", "ủ", so "Kỉ niệm" rendered as "Ki niệm".
+const script = Charm({
+  variable: "--font-charm",
+  weight: ["400", "700"],
   subsets: ["latin", "vietnamese"],
 });
 

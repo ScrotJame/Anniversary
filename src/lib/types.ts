@@ -10,6 +10,8 @@ export type Settings = {
   startDate: string | null;
   envelopeTitle: string;
   finaleTitle: string;
+  /** Text written on the card shown after the envelope opens. */
+  cardText: string;
 };
 
 export type Content = {

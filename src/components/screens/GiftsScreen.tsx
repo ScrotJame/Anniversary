@@ -50,11 +50,6 @@ export default function GiftsScreen({
                 <Icon className="size-24 drop-shadow-[0_8px_12px_rgb(0_0_0/0.35)] sm:size-32" />
               </span>
               <span className="font-serif text-sm text-cream sm:text-base">{label}</span>
-              {isOpened && (
-                <span className="absolute top-0 right-1 grid size-7 place-items-center rounded-full bg-gold text-sm text-wine-deep shadow sm:right-4">
-                  ✓
-                </span>
-              )}
             </motion.button>
           );
         })}

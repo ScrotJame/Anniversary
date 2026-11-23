@@ -4,14 +4,13 @@ import { motion } from "motion/react";
 import { Bouquet, Vinyl } from "@/components/decor/Illustrations";
 import { FallingPetals } from "@/components/decor/Ambient";
 import { useMusic } from "@/components/music/MusicProvider";
-import { BackButton, Paragraphs, Screen } from "./Screen";
+import { NextButton, Paragraphs, Screen } from "./Screen";
 
-export default function FlowerLetterScreen({ letter, onBack }: { letter: string[]; onBack: () => void }) {
+export default function FlowerLetterScreen({ letter, onNext }: { letter: string[]; onNext: () => void }) {
   const { playing } = useMusic();
 
   return (
     <Screen>
-      <BackButton onClick={onBack} />
       <FallingPetals />
 
       <motion.div
@@ -48,6 +47,8 @@ export default function FlowerLetterScreen({ letter, onBack }: { letter: string[
           />
         </motion.div>
       </motion.div>
+
+      <NextButton onClick={onNext} />
     </Screen>
   );
 }

@@ -2,20 +2,19 @@
 
 import { motion } from "motion/react";
 import { Photo, Tape } from "@/components/decor/Photo";
-import { BackButton, Paragraphs, Screen, ScriptTitle } from "./Screen";
+import { NextButton, Paragraphs, Screen, ScriptTitle } from "./Screen";
 
 export default function MemoriesScreen({
   photos,
   letter,
-  onBack,
+  onNext,
 }: {
   photos: string[];
   letter: string[];
-  onBack: () => void;
+  onNext: () => void;
 }) {
   return (
     <Screen>
-      <BackButton onClick={onBack} />
       <ScriptTitle>Memories Made With You</ScriptTitle>
 
       <div className="mt-10 grid w-full gap-8 md:grid-cols-[auto_1fr] md:items-start">
@@ -50,6 +49,8 @@ export default function MemoriesScreen({
           <Paragraphs items={letter} />
         </motion.article>
       </div>
+
+      <NextButton onClick={onNext} />
     </Screen>
   );
 }
