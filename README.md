@@ -8,6 +8,7 @@ Website kỷ niệm (Next.js, static export cho GitHub Pages).
 npm install
 npm run dev      # http://localhost:3000
 npm run build    # xuất file tĩnh ra thư mục out/ (đường dẫn /Anniversary)
+npm test         # chạy unit test (Node 24+)
 ```
 
 ## Quản lý nội dung — `public/content/`
@@ -27,7 +28,7 @@ Thêm / xoá file trong các thư mục dưới đây, không cần sửa code. 
 - **Tên bài hát** lấy từ tên file: `01 - Perfect - Ed Sheeran.mp3` → *Perfect · Ed Sheeran*.
 - **Ảnh** nên thu nhỏ còn ~1600px cạnh dài trước khi thả vào (static export không tự nén ảnh).
 - File mẫu (`*-mau.svg`, `* - Demo.wav`) chỉ để demo. Thư mục nào có ảnh thật thì ảnh mẫu tự ẩn.
-- **Ảnh nền:** đặt file tên `background` (đuôi ảnh bất kỳ, vd. `background.jpeg`) vào thư mục của màn đó —
+- **Ảnh nền:** đặt file tên `background` (`background.jpg`, hoặc .jpeg/.png/.webp) vào thư mục của màn đó; ảnh thật đặt trong `content-private/<màn>/` để được đồng bộ và không bao giờ bị commit —
   `polaroid/`, `collage/`, `memories/`, `finale/`, hoặc tạo thêm `envelope/`, `gifts/`, `flowers/`.
   Ảnh nền không bị tính vào ảnh của màn. Không có thì dùng nền màu mặc định.
 - **Màn cuối:** trái tim 3D xoay; chạm liên tục (10 lần) để phá vỡ, rồi mưa tim nhiều màu và ảnh `finale/` rơi xuống.

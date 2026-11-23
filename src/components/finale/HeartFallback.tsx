@@ -45,7 +45,15 @@ export default function HeartFallback({ hitsToBreak, onBroken }: { hitsToBreak: 
   return (
     <div
       className={`absolute inset-0 flex touch-manipulation items-center justify-center${burst ? " pointer-events-none" : ""}`}
+      role="button"
+      tabIndex={0}
+      aria-label="Chạm để mở trái tim"
       onPointerDown={hit}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        if (!e.repeat) hit();
+      }}
     >
       {!burst && (
         <div ref={scope} className="size-56 [perspective:800px] sm:size-72">

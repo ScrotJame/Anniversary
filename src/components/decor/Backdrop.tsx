@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Photo } from "./Photo";
 
@@ -7,7 +8,14 @@ import { Photo } from "./Photo";
  * Full-screen background photo behind every screen, crossfading when it changes.
  * No src → renders nothing and the body's CSS background shows through.
  */
-export function Backdrop({ src }: { src?: string }) {
+export function Backdrop({ src, preload = [] }: { src?: string; preload?: string[] }) {
+  const key = preload.join("|");
+  useEffect(() => {
+    // Held in a local so the images are not collected before they finish loading.
+    const imgs = key ? key.split("|").map((u) => Object.assign(new Image(), { src: u })) : [];
+    void imgs;
+  }, [key]);
+
   return (
     <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
       <AnimatePresence>

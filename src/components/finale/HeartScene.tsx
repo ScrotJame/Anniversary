@@ -140,6 +140,7 @@ export default function HeartScene({
           observer.disconnect();
           for (const p of pieces) p.mesh.geometry.dispose();
           material.dispose();
+          renderer.forceContextLoss();
           renderer.dispose();
           renderer.domElement.remove();
           hitRef.current = () => {};
@@ -228,5 +229,19 @@ export default function HeartScene({
   }, [hitsToBreak]);
 
   if (done) return null;
-  return <div ref={mountRef} className="absolute inset-0 touch-manipulation" onPointerDown={() => hitRef.current()} />;
+  return (
+    <div
+      ref={mountRef}
+      className="absolute inset-0 touch-manipulation"
+      role="button"
+      tabIndex={0}
+      aria-label="Chạm để mở trái tim"
+      onPointerDown={() => hitRef.current()}
+      onKeyDown={(e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        if (!e.repeat) hitRef.current();
+      }}
+    />
+  );
 }

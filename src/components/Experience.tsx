@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import type { Content, GiftId, ScreenId } from "@/lib/types";
 import { MusicProvider } from "./music/MusicProvider";
@@ -41,10 +41,14 @@ export default function Experience({ content }: { content: Content }) {
   };
 
   const { photos, letters, settings, backgrounds } = content;
+  const preloadList = useMemo(
+    () => Object.values(backgrounds).filter((s): s is string => Boolean(s)),
+    [backgrounds],
+  );
 
   return (
     <MusicProvider songs={content.songs}>
-      <Backdrop src={backgrounds[screen]} />
+      <Backdrop src={backgrounds[screen]} preload={preloadList} />
       <AnimatePresence mode="wait">
         {screen === "envelope" && (
           <EnvelopeScreen

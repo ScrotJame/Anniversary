@@ -52,7 +52,7 @@ export default function FinaleScreen({
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
             transition={{ delay: 1, duration: 0.8 }}
             className="pointer-events-none absolute inset-x-0 bottom-24 px-4 text-center font-script text-2xl text-cream/90 drop-shadow-[0_2px_8px_rgb(0_0_0/0.5)]"
           >
