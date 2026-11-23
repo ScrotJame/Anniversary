@@ -70,11 +70,24 @@ body {
   0%, 100% { transform: translateX(-18px); }
   50% { transform: translateX(18px); }
 }
+/* Photos: fall with a gentle rock instead of a full spin */
+@keyframes fall-tilt {
+  0% { transform: translateY(-25vh) rotate(-10deg); opacity: 0; }
+  8% { opacity: 1; }
+  50% { transform: translateY(45vh) rotate(8deg); }
+  100% { transform: translateY(115vh) rotate(-6deg); opacity: 0.9; }
+}
+/* Finale SVG fallback heart: turns left → right */
+@keyframes spin-y {
+  to { transform: rotateY(360deg); }
+}
 .anim-float { animation: float-up linear infinite; }
 .anim-fall { animation: fall linear infinite; }
 .anim-sway { animation: sway ease-in-out infinite; }
+.anim-fall-tilt { animation: fall-tilt linear infinite; }
+.anim-spin-y { animation: spin-y 10.5s linear infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .anim-float, .anim-fall, .anim-sway { display: none; }
-  .animate-spin-slow, .animate-breathe { animation: none; }
+  .anim-float, .anim-fall, .anim-sway, .anim-fall-tilt { display: none; }
+  .animate-spin-slow, .animate-breathe, .anim-spin-y { animation: none; }
 }
