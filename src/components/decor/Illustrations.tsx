@@ -28,7 +28,8 @@ export function Vinyl({ className }: SvgProps) {
 
 export function GiftLetter({ className }: SvgProps) {
   return (
-    <svg viewBox="0 0 120 120" className={className} aria-hidden>
+    // cropped to the envelope (+4 units margin) so its bottom edge is the box's bottom edge
+    <svg viewBox="10 26 100 72" className={className} aria-hidden>
       <rect x="14" y="30" width="92" height="64" rx="6" fill="#f5e6d3" />
       <path d="M14 36 L60 70 L106 36" fill="none" stroke="#c9a49a" strokeWidth="2.5" strokeLinejoin="round" />
       <path d="M14 92 L48 62 M106 92 L72 62" stroke="#e2cbb9" strokeWidth="2" />

@@ -14,6 +14,12 @@ import MemoriesScreen from "./screens/MemoriesScreen";
 import FlowerLetterScreen from "./screens/FlowerLetterScreen";
 import FinaleScreen from "./screens/FinaleScreen";
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+/** Shopfront outside (envelope) and inside (gifts). The gifts screen draws its own picture so the
+ * gifts can sit on its shelves; the Backdrop only shows the envelope one. */
+const SHOP_BG = `${BASE}/shop_bg.svg`;
+const SHOP_INSIDE_BG = `${BASE}/inside_shop_bg.svg`;
+
 const GIFT_TARGET: Record<GiftId, ScreenId> = {
   letter: "memories",
   bear: "polaroid",
@@ -40,9 +46,13 @@ export default function Experience({ content }: { content: Content }) {
     go("envelope");
   };
 
-  const { photos, letters, settings, backgrounds } = content;
+  const { photos, letters, settings } = content;
+  const backgrounds = useMemo(
+    () => ({ ...content.backgrounds, envelope: content.backgrounds.envelope ?? SHOP_BG, gifts: undefined }),
+    [content.backgrounds],
+  );
   const preloadList = useMemo(
-    () => Object.values(backgrounds).filter((s): s is string => Boolean(s)),
+    () => [...Object.values(backgrounds), SHOP_INSIDE_BG].filter((s): s is string => Boolean(s)),
     [backgrounds],
   );
 

@@ -77,6 +77,17 @@ body {
   50% { transform: translateY(45vh) rotate(8deg); }
   100% { transform: translateY(115vh) rotate(-6deg); opacity: 0.9; }
 }
+/* Photos: tumble in 3D while they fall (front and back face alternate, lingering on each) */
+@keyframes tumble {
+  0% { transform: rotateX(18deg) rotateY(0deg) rotateZ(-6deg); animation-timing-function: ease-in-out; }
+  50% { transform: rotateX(-22deg) rotateY(180deg) rotateZ(7deg); animation-timing-function: ease-in-out; }
+  100% { transform: rotateX(18deg) rotateY(360deg) rotateZ(-6deg); }
+}
+/* Gifts on the shelves: soft warm glow while unopened */
+@keyframes glow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgb(255 214 140 / 0)); }
+  50% { filter: drop-shadow(0 0 1.4cqh rgb(255 214 140 / 0.85)); }
+}
 /* Finale SVG fallback heart: turns left → right */
 @keyframes spin-y {
   to { transform: rotateY(360deg); }
@@ -86,8 +97,10 @@ body {
 .anim-sway { animation: sway ease-in-out infinite; }
 .anim-fall-tilt { animation: fall-tilt linear infinite; }
 .anim-spin-y { animation: spin-y 10.5s linear infinite; }
+.anim-tumble { animation: tumble linear infinite; transform-style: preserve-3d; }
+.animate-glow { animation: glow 2.6s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   .anim-float, .anim-fall, .anim-sway, .anim-fall-tilt { display: none; }
-  .animate-spin-slow, .animate-breathe, .anim-spin-y { animation: none; }
+  .animate-spin-slow, .animate-breathe, .anim-spin-y, .anim-tumble, .animate-glow { animation: none; }
 }
